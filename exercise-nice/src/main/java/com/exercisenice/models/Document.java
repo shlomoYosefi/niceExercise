@@ -25,13 +25,16 @@ public class Document {
 
 
     private Long id;
-    @NotEmpty
+    @Size(min = 1,max = 10)
     private String label;
-    @NotEmpty
+    @Size(min = 1,max = 15)
     private String documentName;
     private LocalDateTime creationDate;
 
     public Document() {
+    }
+
+    public Document(Long idDocumentTest, String test, String osem, LocalDateTime now) {
     }
 
 

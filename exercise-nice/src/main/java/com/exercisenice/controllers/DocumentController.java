@@ -48,7 +48,8 @@ public class DocumentController {
             return ResponseEntity.ok().body(documentService.addDocument(document));
         }
         catch (Exception e) {
-            throw e;
+            logger.severe(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(DocumentMessageBuilder.internalServerError);
         }
     }
 
@@ -61,11 +62,12 @@ public class DocumentController {
             return ResponseEntity.ok().body(documentService.getDocumentById(id));
         }
         catch (NoSuchElementException e) {
-            logger.info(messageNotExists);
+            logger.warning(messageNotExists);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageNotExists);
         }
         catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getStackTrace());
+            logger.severe(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(DocumentMessageBuilder.internalServerError);
         }
     }
 
@@ -78,7 +80,7 @@ public class DocumentController {
             return ResponseEntity.ok().body(documentService.getDocuments());
         }
         catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getStackTrace());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(DocumentMessageBuilder.internalServerError);
         }
     }
 
@@ -91,11 +93,12 @@ public class DocumentController {
            return ResponseEntity.ok().body(documentService.updateDocument(document, id));
         }
         catch (NoSuchElementException e) {
-            logger.info(messageNotExists);
+            logger.warning(messageNotExists);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageNotExists);
         }
         catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getStackTrace());
+            logger.severe(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(DocumentMessageBuilder.internalServerError);
         }
     }
 
@@ -108,11 +111,12 @@ public class DocumentController {
             return ResponseEntity.ok(documentService.deleteDocument(id));
         }
         catch (NoSuchElementException e) {
-            logger.info(messageNotExists);
+            logger.warning(messageNotExists);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageNotExists);
         }
         catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getStackTrace());
+            logger.severe(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(DocumentMessageBuilder.internalServerError);
         }
     }
 

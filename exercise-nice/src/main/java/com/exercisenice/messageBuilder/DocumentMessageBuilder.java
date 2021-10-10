@@ -11,4 +11,5 @@ public abstract class DocumentMessageBuilder {
     public static String updateSuccess ="successfully updated";
     public static String deleteSuccess ="successfully deleted";
     public static String notExists=  "document does not exists";
+    public static String internalServerError = "Internal Server Error";
 }

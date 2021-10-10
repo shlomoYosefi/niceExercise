@@ -8,14 +8,15 @@ import com.exercisenice.models.Document;
 import com.exercisenice.repositories.DocumentRepository;
 import javassist.tools.web.BadHttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.SqlInOutParameter;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.logging.Logger;
 
 @Service
@@ -34,7 +35,7 @@ public class DocumentService {
 
     }
 
-    @Retryable(value = Exception.class,maxAttempts = maxAttempts ,backoff = @Backoff(delay))
+    @Retryable(value = {SQLException.class},maxAttempts = maxAttempts ,backoff = @Backoff(delay))
     public String addDocument(Document document){
         logger.info(DocumentMessageBuilder.tryAddDocument +document.toString());
         try {
@@ -43,13 +44,17 @@ public class DocumentService {
             String message = DocumentMessageBuilder.addSuccess;
             logger.info(message);
             return message;
-        } catch (Exception e) {
+        }
+//        catch (SQLException e) {
+//            throw e;
+//        }
+        catch (Exception e) {
             throw e;
         }
     }
 
 
-    @Retryable(value = {NoSuchElementException.class,Exception.class},maxAttempts = maxAttempts ,backoff = @Backoff(delay))
+    @Retryable(value = SQLException.class,maxAttempts = maxAttempts ,backoff = @Backoff(delay))
     public Document getDocumentById(Long id) throws BadHttpRequest {
         logger.info(DocumentMessageBuilder.tryGetDocument+id);
                 return documentRepository.findById(id).get();
@@ -58,7 +63,7 @@ public class DocumentService {
 
 
 
-    @Retryable(value = Exception.class,maxAttempts = maxAttempts ,backoff = @Backoff(delay))
+    @Retryable(value = SQLException.class,maxAttempts = maxAttempts ,backoff = @Backoff(delay))
     public List<Document> getDocuments(){
         logger.info(DocumentMessageBuilder.tryGetAllDocument);
         try {
@@ -70,7 +75,7 @@ public class DocumentService {
 
 
 
-    @Retryable(value = {NoSuchElementException.class,Exception.class},maxAttempts = maxAttempts ,backoff = @Backoff(delay))
+    @Retryable(value = {SQLException.class,Exception.class},maxAttempts = maxAttempts ,backoff = @Backoff(delay))
     public String updateDocument(Document document,Long id) throws HttpClientErrorException {
         logger.info(DocumentMessageBuilder.tryUpdateDocument +document.toString() );
         try{
@@ -88,7 +93,7 @@ public class DocumentService {
 
 
 
-    @Retryable(value = {NoSuchElementException.class,Exception.class},maxAttempts = maxAttempts ,backoff = @Backoff(delay))
+    @Retryable(value = {SQLException.class},maxAttempts = maxAttempts ,backoff = @Backoff(delay))
     public String deleteDocument(Long id){
         logger.info(DocumentMessageBuilder.tryDeleteDocument+ id);
         try {
@@ -102,24 +107,6 @@ public class DocumentService {
             throw e;
         }
        }
-
-
-
-
-//    @Recover
-//    private String recover(HttpServerErrorException throwable){
-//        logger.info("error of:   "+throwable.getMessage());
-//        logger.severe("error of:   "+throwable.getMessage());
-//        return result;
-//    }
-//
-//
-//    @Recover
-//    private String recover(HttpClientErrorException throwable){
-//        logger.info("error of:   "+throwable.getMessage());
-//        logger.severe("error of:   "+throwable.getMessage());
-//        return result;
-//    }
 
     }
 

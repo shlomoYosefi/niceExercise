@@ -12,18 +12,7 @@ import java.time.LocalDateTime;
 public class Document {
 
     @Id
-    @SequenceGenerator(
-            name= "documents_sequence",
-            sequenceName = "documents_sequence",
-            allocationSize = 1
-    )
-
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "documents_sequence"
-    )
-
-
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
     @Size(min = 1,max = 10)
     private String label;
@@ -34,7 +23,7 @@ public class Document {
     public Document() {
     }
 
-    public Document(Long idDocumentTest, String test, String osem, LocalDateTime now) {
+    public Document(Long idDocumentTest, String label, String documentName, LocalDateTime now) {
     }
 
 

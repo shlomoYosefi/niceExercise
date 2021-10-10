@@ -36,7 +36,7 @@ public class DocumentService {
     }
 
     @Retryable(value = {SQLException.class},maxAttempts = maxAttempts ,backoff = @Backoff(delay))
-    public String addDocument(Document document){
+    public String addDocument(Document document) throws SQLException{
         logger.info(DocumentMessageBuilder.tryAddDocument +document.toString());
         try {
             document.setCreationDate(LocalDateTime.now());
@@ -55,20 +55,26 @@ public class DocumentService {
 
 
     @Retryable(value = SQLException.class,maxAttempts = maxAttempts ,backoff = @Backoff(delay))
-    public Document getDocumentById(Long id) throws BadHttpRequest {
+    public Document getDocumentById(Long id) throws SQLException {
         logger.info(DocumentMessageBuilder.tryGetDocument+id);
-                return documentRepository.findById(id).get();
+        try{
+            return documentRepository.findById(id).get();
+        }
+        catch (Exception e) {
+            throw e;
+        }
     }
 
 
 
 
     @Retryable(value = SQLException.class,maxAttempts = maxAttempts ,backoff = @Backoff(delay))
-    public List<Document> getDocuments(){
+    public List<Document> getDocuments() throws SQLException {
         logger.info(DocumentMessageBuilder.tryGetAllDocument);
         try {
             return documentRepository.findAll();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw e;
         }
     }
@@ -76,7 +82,7 @@ public class DocumentService {
 
 
     @Retryable(value = {SQLException.class,Exception.class},maxAttempts = maxAttempts ,backoff = @Backoff(delay))
-    public String updateDocument(Document document,Long id) throws HttpClientErrorException {
+    public String updateDocument(Document document,Long id) throws SQLException {
         logger.info(DocumentMessageBuilder.tryUpdateDocument +document.toString() );
         try{
              documentRepository.findById(id).get();
@@ -94,7 +100,7 @@ public class DocumentService {
 
 
     @Retryable(value = {SQLException.class},maxAttempts = maxAttempts ,backoff = @Backoff(delay))
-    public String deleteDocument(Long id){
+    public String deleteDocument(Long id) throws SQLException{
         logger.info(DocumentMessageBuilder.tryDeleteDocument+ id);
         try {
             Document document = documentRepository.findById(id).get();

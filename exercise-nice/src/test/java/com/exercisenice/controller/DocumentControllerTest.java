@@ -5,47 +5,41 @@ import com.exercisenice.models.Document;
 import com.exercisenice.repositories.DocumentRepository;
 import com.exercisenice.services.DocumentService;
 import javassist.tools.web.BadHttpRequest;
-import org.hibernate.type.LocalDateTimeType;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class DocumentControllerTest {
 
-    @Mock
+    @MockBean
     private DocumentRepository documentRepository;
     private DocumentService documentService;
 
     @Test
-    void addDocument(){
+    void addDocument() throws SQLException {
         //when
         Document document = new Document("shlomo","yosefi",LocalDateTime.now());
+//        when(documentRepository.save(document)).thenReturn(document);
+//        assertEquals(document,documentRepository.save(document));
         //then
         documentService.addDocument(document);
         //then
@@ -56,22 +50,29 @@ class DocumentControllerTest {
     }
 
     @Test
-    void getAllDocuments(){
-        //when
-        documentService.getDocuments();
-        //then
-        verify(documentRepository).findAll();
+    void getAllDocuments() throws SQLException {
+        Document document1 = new Document(1L,"shlomo","yosefi",LocalDateTime.now());
+        Document document2 = new Document(2L,"ravtech","avratech",LocalDateTime.now());
+        when(documentService.getDocuments()).thenReturn(Stream
+        .of(document1,document2).collect(Collectors.toList()));
+        assertEquals(2,documentService.getDocuments().size());
     }
 
     @Test
-    void getDocumentByIdTest() throws IOException, BadHttpRequest {
-        Document document = new Document(1l,"shlomo","yosefi",LocalDateTime.now());
-        documentService.addDocument(document);
-        //when
-//        Document getDocument = documentService.getDocumentById(1L);
-        when(documentService.getDocumentById(1l)).thenReturn(document);
-        //then
+    void getDocumentByIdTest() throws  SQLException {
+//        Document document = new Document(1L,"shlomo","yosefi",LocalDateTime.now());
+//        when(documentRepository.findByLabel("shlomo")).thenReturn( Stream
+//        .of(document).collect(Collectors.toList()));
+//        assertEquals(1,documentRepository.findAll().size());        //when
     }
+
+    @Test
+    void deleteDocument(){
+        Document document = new Document(1L,"shlomo","yosefi",LocalDateTime.now());
+        documentRepository.delete(document);
+        verify(documentRepository,times(1)).delete(document);
+    }
+
 
     @BeforeEach
     void setUp(){

@@ -12,29 +12,22 @@ import java.time.LocalDateTime;
 public class Document {
 
     @Id
-    @SequenceGenerator(
-            name= "documents_sequence",
-            sequenceName = "documents_sequence",
-            allocationSize = 1
-    )
-
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "documents_sequence"
-    )
-
-
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
-    @Size(min = 1,max = 10)
+    @Size(min = 1,max = 10,message = "label should be between 1 and 10")
     private String label;
-    @Size(min = 1,max = 15)
+    @Size(min = 1,max = 15,message = "documentName should be between 1 and 15")
     private String documentName;
     private LocalDateTime creationDate;
 
     public Document() {
     }
 
-    public Document(Long idDocumentTest, String test, String osem, LocalDateTime now) {
+    public Document(Long idDocumentTest, String label, String documentName, LocalDateTime localDateTime) {
+        this.id = idDocumentTest;
+        this.label = label;
+        this.documentName = documentName;
+        this.creationDate = localDateTime;
     }
 
 

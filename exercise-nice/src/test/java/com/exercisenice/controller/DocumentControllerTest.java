@@ -1,79 +1,112 @@
 package com.exercisenice.controller;
 
 import com.exercisenice.controllers.DocumentController;
+import com.exercisenice.messageBuilder.DocumentMessageBuilder;
 import com.exercisenice.models.Document;
 import com.exercisenice.repositories.DocumentRepository;
 import com.exercisenice.services.DocumentService;
 import javassist.tools.web.BadHttpRequest;
-import org.hibernate.type.LocalDateTimeType;
+import org.hibernate.event.spi.SaveOrUpdateEvent;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @SpringBootTest
-@ExtendWith(MockitoExtension.class)
+//@ExtendWith(MockitoExtension.class)
+@AutoConfigureMockMvc
 class DocumentControllerTest {
 
-    @Mock
+    @Autowired
+    private DocumentController documentController;
+    @MockBean
     private DocumentRepository documentRepository;
+    @InjectMocks
     private DocumentService documentService;
+    Document document1 = new Document(1L,"test1","test1",LocalDateTime.now());
+    Document document2 = new Document(2L,"test2","test2",LocalDateTime.now());
+
+//
 
     @Test
-    void addDocument(){
+    void addDocument() throws SQLException {
+        //given
+        Document document = document1;
         //when
-        Document document = new Document("shlomo","yosefi",LocalDateTime.now());
+        when(documentRepository.save(document)).thenReturn(document);
+        documentController.addDocument(document);
         //then
-        documentService.addDocument(document);
-        //then
-        ArgumentCaptor<Document> documentArgumentCaptor = ArgumentCaptor.forClass(Document.class);
-        verify(documentRepository).save(documentArgumentCaptor.capture());
-        Document capturedDocument = documentArgumentCaptor.getValue();
-        assertThat(capturedDocument).isEqualTo(document);
+        assertEquals(document,documentRepository.save(document));
     }
 
     @Test
-    void getAllDocuments(){
+    void getAllDocuments() throws Exception {
+        //given
+        Document document1 = this.document1;
+        Document document2 = this.document2;
         //when
-        documentService.getDocuments();
+        when(documentController.getAllDocument().getBody()).thenReturn(Stream
+        .of(document1,document2).collect(Collectors.toList()));
         //then
-        verify(documentRepository).findAll();
+        assertEquals(2,documentService.getDocuments().size());
     }
 
     @Test
-    void getDocumentByIdTest() throws IOException, BadHttpRequest {
-        Document document = new Document("shlomo","yosefi",LocalDateTime.now());
-        documentService.addDocument(document);
-        //when
-//        Document getDocument = documentService.getDocumentById(1L);
+    void getDocumentByIdTest() throws Exception {
+        Document document = document1;
 
-        System.out.println(documentRepository.findAll());
-//        when(documentService.getDocumentById(1L)).thenReturn(document);
-        //then
+//        Optional<Document> document = Optional.of(new Document("shlomo","yosefi",LocalDateTime.now()));
+//        given(documentRepository.findById(Mockito.anyLong())).willReturn(document);
+//        Document returnedObject = documentService.getDocumentById(1L);
+//        Mockito.verify(documentRepository).findById(Mockito.anyLong());
+//        assertNotNull(returnedObject);
+//        assertEquals(returnedObject.getLabel(),"shlomo");
+        when(documentRepository.findById(1L)).thenReturn(Optional.of(document));
+        documentController.getDocumentById(1L);
+        verify(documentRepository, times(1)).findById(1L);
     }
+
+
+    @Test
+    void deleteDocument() throws SQLException {
+        when(documentRepository.findById(1L)).thenReturn(Optional.of(new Document()));
+        documentController.deleteDocument(1L);
+        verify(documentRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void updateDocument() throws SQLException {
+        //given
+        Document document = document1;
+        when(documentRepository.findById(1L)).thenReturn(Optional.of(document));
+        documentService.updateDocument(document,1L);
+        verify(documentRepository, times(1)).save(document);
+    }
+
 
     @BeforeEach
     void setUp(){

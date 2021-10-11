@@ -16,6 +16,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -63,6 +65,13 @@ class DocumentControllerTest {
         assertEquals(document,documentRepository.save(document));
     }
 
+//    @Test
+//    void addDocumentByIdWithExceptionSQLException() throws SQLException {
+//        Document document = document1;
+//        when(documentRepository.save(document)).thenAnswer(DocumentMessageBuilder.);
+//        assertEquals(DocumentMessageBuilder.faultInTheDataServer,documentController.addDocument(document).getBody());
+//    }
+
     @Test
     void getAllDocuments() throws Exception {
         //given
@@ -90,12 +99,25 @@ class DocumentControllerTest {
         verify(documentRepository, times(1)).findById(1L);
     }
 
+    @Test
+    void getDocumentByIdWithExceptionNoSuchElement(){
+        String result = (String) documentController.getDocumentById(100L).getBody();
+        assertEquals("document does not exists",result);
+    }
+
 
     @Test
     void deleteDocument() throws SQLException {
         when(documentRepository.findById(1L)).thenReturn(Optional.of(new Document()));
         documentController.deleteDocument(1L);
         verify(documentRepository, times(1)).deleteById(1L);
+    }
+
+
+    @Test
+    void deleteDocumentByIdWithExceptionNoSuchElement(){
+        String result = (String) documentController.deleteDocument(100L).getBody();
+        assertEquals("document does not exists",result);
     }
 
     @Test
@@ -105,6 +127,13 @@ class DocumentControllerTest {
         when(documentRepository.findById(1L)).thenReturn(Optional.of(document));
         documentService.updateDocument(document,1L);
         verify(documentRepository, times(1)).save(document);
+    }
+
+    @Test
+    void updateDocumentByIdWithExceptionNoSuchElement(){
+        Document document = document1;
+        String result = (String) documentController.updateDocument(100L,document).getBody();
+        assertEquals("document does not exists",result);
     }
 
 

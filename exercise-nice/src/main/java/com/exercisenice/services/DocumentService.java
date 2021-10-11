@@ -81,7 +81,7 @@ public class DocumentService {
 
 
 
-    @Retryable(value = {SQLException.class,Exception.class},maxAttempts = maxAttempts ,backoff = @Backoff(delay))
+    @Retryable(value = {SQLException.class},maxAttempts = maxAttempts ,backoff = @Backoff(delay))
     public String updateDocument(Document document,Long id) throws SQLException {
         logger.info(DocumentMessageBuilder.tryUpdateDocument +document.toString() );
         try{

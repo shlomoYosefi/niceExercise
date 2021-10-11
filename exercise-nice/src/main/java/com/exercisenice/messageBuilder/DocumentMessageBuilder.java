@@ -6,7 +6,7 @@ public abstract class DocumentMessageBuilder {
     public static String tryGetDocument = "get document by id :  ";
     public static String tryGetAllDocument = "get all documents";
     public static String tryUpdateDocument = "update document :  ";
-    public static String tryDeleteDocument = "delete document by id";
+    public static String tryDeleteDocument = "delete document by id : ";
     public static String addSuccess = "The document was successfully added";
     public static String updateSuccess = "successfully updated";
     public static String deleteSuccess = "successfully deleted";

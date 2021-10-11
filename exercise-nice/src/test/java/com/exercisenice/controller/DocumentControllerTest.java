@@ -65,11 +65,13 @@ class DocumentControllerTest {
 
     @Test
     void getDocumentByIdTest() throws IOException, BadHttpRequest {
-        Document document = new Document(1l,"shlomo","yosefi",LocalDateTime.now());
+        Document document = new Document("shlomo","yosefi",LocalDateTime.now());
         documentService.addDocument(document);
         //when
 //        Document getDocument = documentService.getDocumentById(1L);
-        when(documentService.getDocumentById(1l)).thenReturn(document);
+
+        System.out.println(documentRepository.findAll());
+//        when(documentService.getDocumentById(1L)).thenReturn(document);
         //then
     }
 

@@ -14,8 +14,10 @@ public class Document {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
-    @Size(min = 1,max = 10,message = "label should be between 1 and 10")
+    @NotBlank(message = "It must be label")
+    @Size(min = 4,max = 10,message = "label should be between 1 and 10")
     private String label;
+    @NotBlank(message = "It must be documentName")
     @Size(min = 1,max = 15,message = "documentName should be between 1 and 15")
     private String documentName;
     private LocalDateTime creationDate;
@@ -30,29 +32,6 @@ public class Document {
         this.creationDate = localDateTime;
     }
 
-
-
-
-    public Document(String label, String documentName,LocalDateTime localDateTime) {
-        this.label = label;
-        this.documentName = documentName;
-        this.creationDate = localDateTime;
-    }
-
-    public Document(String label, String documentName) {
-        this.label = label;
-        this.documentName = documentName;
-    }
-
-    @Override
-    public String toString() {
-        return "Document{" +
-                "id=" + id +
-                ", label='" + label + '\'' +
-                ", documentName='" + documentName + '\'' +
-                ", creationDate=" + creationDate +
-                '}';
-    }
 
     public LocalDateTime getCreationDate() {
         return creationDate;
@@ -86,4 +65,15 @@ public class Document {
         this.documentName = documentName;
     }
 
+
+
+    @Override
+    public String toString() {
+        return "Document{" +
+                "id=" + id +
+                ", label='" + label + '\'' +
+                ", documentName='" + documentName + '\'' +
+                ", creationDate=" + creationDate +
+                '}';
+    }
 }

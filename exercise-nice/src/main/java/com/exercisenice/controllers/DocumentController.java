@@ -49,10 +49,6 @@ public class DocumentController {
         try{
             return ResponseEntity.ok().body(documentService.addDocument(document));
         }
-        catch (SQLException e){
-            logger.severe(e.getMessage());
-            return ResponseEntity.status(500).body(DocumentMessageBuilder.faultInTheDataServer);
-        }
         catch (Exception e) {
             logger.severe(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(DocumentMessageBuilder.internalServerError);
@@ -71,10 +67,6 @@ public class DocumentController {
             logger.warning(messageNotExists);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageNotExists);
         }
-        catch (SQLException e){
-            logger.severe(e.getMessage());
-            return ResponseEntity.status(500).body(DocumentMessageBuilder.faultInTheDataServer);
-        }
         catch (Exception e){
             logger.severe(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(DocumentMessageBuilder.internalServerError);
@@ -88,10 +80,6 @@ public class DocumentController {
     public ResponseEntity getAllDocument(){
         try{
             return ResponseEntity.ok().body(documentService.getDocuments());
-        }
-        catch (SQLException e){
-            logger.severe(e.getMessage());
-            return ResponseEntity.status(500).body(DocumentMessageBuilder.faultInTheDataServer);
         }
         catch (Exception e) {
             logger.severe(e.getMessage());
@@ -111,10 +99,6 @@ public class DocumentController {
             logger.warning(messageNotExists);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageNotExists);
         }
-        catch (SQLException e){
-            logger.severe(e.getMessage());
-            return ResponseEntity.status(500).body(DocumentMessageBuilder.faultInTheDataServer);
-        }
         catch (Exception e) {
             logger.severe(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(DocumentMessageBuilder.internalServerError);
@@ -132,10 +116,6 @@ public class DocumentController {
         catch (NoSuchElementException e) {
             logger.warning(messageNotExists);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageNotExists);
-        }
-        catch (SQLException e){
-            logger.severe(e.getMessage());
-            return ResponseEntity.status(500).body(DocumentMessageBuilder.faultInTheDataServer);
         }
         catch (Exception e) {
             logger.severe(e.getMessage());

@@ -22,7 +22,9 @@ public class DocumentValidationHandler extends ResponseEntityExceptionHandler {
 
             String fieldName = ((FieldError) error).getField();
             String message = error.getDefaultMessage();
-            errors.put(fieldName,message);
+            errors.put("status: ","400");
+            errors.put("error : " ,"Bad Request");
+            errors.put("message :",message);
         });
         return new ResponseEntity<Object>(errors,HttpStatus.BAD_REQUEST);
     }
